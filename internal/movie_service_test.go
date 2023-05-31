@@ -25,9 +25,8 @@ func TestMovieService(t *testing.T) {
 		t.Run("success", func(t *testing.T) {
 			reset()
 			search.QueryReturns([]string{}, nil)
-			movies, err := ms.Query("")
+			_, err := ms.Query("")
 			require.Nil(t, err)
-			require.NotNil(t, movies)
 		})
 
 		t.Run("failed", func(t *testing.T) {

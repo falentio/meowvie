@@ -14,9 +14,9 @@ func TestMovieRepo(t *testing.T) {
 		"gorm": NewMovieRepoGorm(db),
 	}
 
+	t.Parallel()
 	for name := range repos {
 		repo := repos[name]
-		t.Parallel()
 		t.Run(name, func(t *testing.T) {
 			m := &Movie{
 				Title:        "testing",
@@ -29,7 +29,7 @@ func TestMovieRepo(t *testing.T) {
 				require.NotZero(t, m.ID)
 			})
 
-			t.Run("get", func(t *testing.T) {
+			t.Run("find", func(t *testing.T) {
 				stored, err := repo.Find(m.ID)
 				require.Nil(t, err)
 				require.NotNil(t, stored)
@@ -44,6 +44,7 @@ func TestMovieRepo(t *testing.T) {
 			t.Run("find all", func(t *testing.T) {
 				stored, err := repo.FindAll([]xid.ID{m.ID})
 				require.Nil(t, err)
+				require.Equal(t, 1, len(stored))
 				require.Equal(t, m.ID, stored[0].ID)
 			})
 
