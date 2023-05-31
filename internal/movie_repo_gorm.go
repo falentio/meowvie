@@ -36,6 +36,7 @@ func (repo *movieRepoGorm) FindAll(ids []xid.ID) ([]*Movie, error) {
 		Order("id DESC").
 		Limit(10).
 		Find(&ms, "id IN ?", ids).
+		Group("title").
 		Error
 	return ms, err
 }
