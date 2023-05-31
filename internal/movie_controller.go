@@ -9,7 +9,7 @@ func NewMovieController(ms *MovieService) *fiber.App {
 	mc := &movieController{ms}
 	app := fiber.New()
 	app.Post("/create", mc.Create)
-	app.Get("/query", mc.Query)
+	app.Get("/search", mc.Query)
 	app.Get("/:id", mc.Find)
 	return app
 }

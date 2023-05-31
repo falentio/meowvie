@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"errors"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/xid"
 )
@@ -46,18 +48,11 @@ func (ms *MovieService) Query(term string) ([]*Movie, error) {
 	if err != nil {
 		return nil, err
 	}
-	movies := make([]*Movie, len(ids))
-	for i := range ids {
-		id, err := xid.FromString(ids[i])
-		if err != nil {
-			return nil, err
-		}
-		movies[i], err = ms.MovieRepo.Find(id)
-		if err != nil {
-			return nil, err
-		}
+	xids, err := toXid(ids)
+	if err != nil {
+		return nil, errors.New("bad id stored in database")
 	}
-	return movies, nil
+	return ms.MovieRepo.FindAll(xids)
 }
 
 func (ms *MovieService) Find(id xid.ID) (*Movie, error) {

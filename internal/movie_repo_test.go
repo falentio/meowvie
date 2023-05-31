@@ -41,6 +41,12 @@ func TestMovieRepo(t *testing.T) {
 				require.Nil(t, stored)
 			})
 
+			t.Run("find all", func(t *testing.T) {
+				stored, err := repo.FindAll([]xid.ID{m.ID})
+				require.Nil(t, err)
+				require.Equal(t, m.ID, stored[0].ID)
+			})
+
 			t.Run("delete", func(t *testing.T) {
 				err := repo.Delete(m.ID)
 				require.Nil(t, err)

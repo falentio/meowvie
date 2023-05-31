@@ -29,6 +29,12 @@ func (repo *movieRepoGorm) Find(id xid.ID) (*Movie, error) {
 	return m, nil
 }
 
+func (repo *movieRepoGorm) FindAll(ids []xid.ID) ([]*Movie, error) {
+	ms := make([]*Movie, len(ids))
+	err := repo.DB.Find(ms, "id IN ?", ids).Error
+	return ms, err
+}
+
 func (repo *movieRepoGorm) Delete(id xid.ID) error {
 	m := &Movie{}
 	m.ID = id

@@ -8,6 +8,7 @@ type Movie struct {
 	Title        string `json:"title"`
 	PageUrl      string `json:"pageUrl"`
 	ThumbnailUrl string `json:"thumbnailUrl"`
+	Provider     string `json:"provider"`
 
 	DownloadUrl []*DownloadUrl `json:"downloadUrl"`
 }
@@ -22,5 +23,6 @@ type MovieSignature struct {
 type MovieRepo interface {
 	Create(*Movie) error
 	Find(xid.ID) (*Movie, error)
+	FindAll([]xid.ID) ([]*Movie, error)
 	Delete(xid.ID) error
 }
