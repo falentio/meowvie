@@ -31,7 +31,12 @@ func (repo *movieRepoGorm) Find(id xid.ID) (*Movie, error) {
 
 func (repo *movieRepoGorm) FindAll(ids []xid.ID) ([]*Movie, error) {
 	ms := make([]*Movie, 0)
-	err := repo.DB.Find(&ms, "id IN ?", ids).Error
+	err := repo.DB.
+		Preload("DownloadUrl").
+		Order("id DESC").
+		Limit(10).
+		Find(&ms, "id IN ?", ids).
+		Error
 	return ms, err
 }
 

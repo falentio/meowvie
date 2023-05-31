@@ -58,3 +58,6 @@ func (ms *MovieService) Query(term string) ([]*Movie, error) {
 func (ms *MovieService) Find(id xid.ID) (*Movie, error) {
 	return ms.MovieRepo.Find(id)
 }
+func (ms *MovieService) Delete(id xid.ID) error {
+	return ms.MovieRepo.Delete(id)
+}

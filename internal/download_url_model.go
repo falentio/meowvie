@@ -8,6 +8,7 @@ type DownloadUrl struct {
 	Url        string `json:"url"`
 	Server     string `json:"server"`
 	Resolution string `json:"resolution"`
+	Size       string `json:"size"`
 
 	MovieID xid.ID `json:"movieId" gorm:"index"`
 	Movie   *Movie `json:"movie"`

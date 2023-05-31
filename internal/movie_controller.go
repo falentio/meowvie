@@ -11,6 +11,7 @@ func NewMovieController(ms *MovieService) *fiber.App {
 	app.Post("/create", mc.Create)
 	app.Get("/search", mc.Query)
 	app.Get("/:id", mc.Find)
+	app.Delete("/:id", mc.Delete)
 	return app
 }
 
@@ -49,4 +50,16 @@ func (mc *movieController) Find(c *fiber.Ctx) error {
 		return fiber.NewError(404, "not found")
 	}
 	return c.JSON(m)
+}
+
+func (mc *movieController) Delete(c *fiber.Ctx) error {
+	id, err := xid.FromString(c.Params("id"))
+	if err != nil {
+		return fiber.NewError(400, "invalid id")
+	}
+
+	if err := mc.MovieService.Delete(id); err != nil {
+		return fiber.NewError(404, "not found")
+	}
+	return c.SendStatus(204)
 }
