@@ -3,8 +3,10 @@ FROM golang:1.20-alpine as builder
 RUN apk add --no-cache build-base
 
 WORKDIR /build
+
 COPY go* .
 RUN go mod download
+RUN go build "gorm.io/driver/sqlite"
 
 COPY internal internal
 COPY cmd cmd

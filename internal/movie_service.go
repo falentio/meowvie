@@ -34,6 +34,9 @@ func (ms *MovieService) Create(m *Movie, signature string) (*Movie, error) {
 	if err := ms.MovieRepo.Create(m); err != nil {
 		return nil, err
 	}
+	for _, d := range m.DownloadUrl {
+		d.MovieID = m.ID
+	}
 	if err := ms.DownloadUrlRepo.CreateBatch(m.DownloadUrl); err != nil {
 		return nil, err
 	}
@@ -58,6 +61,7 @@ func (ms *MovieService) Query(term string) ([]*Movie, error) {
 func (ms *MovieService) Find(id xid.ID) (*Movie, error) {
 	return ms.MovieRepo.Find(id)
 }
+
 func (ms *MovieService) Delete(id xid.ID) error {
 	return ms.MovieRepo.Delete(id)
 }

@@ -16,7 +16,7 @@ func NewMovieRepoGorm(DB *gorm.DB) MovieRepo {
 
 func (repo *movieRepoGorm) Create(m *Movie) error {
 	m.ID = xid.New()
-	return repo.DB.Create(m).Error
+	return repo.DB.Omit("DownloadUrl").Create(m).Error
 }
 
 func (repo *movieRepoGorm) Find(id xid.ID) (*Movie, error) {
@@ -31,20 +31,14 @@ func (repo *movieRepoGorm) Find(id xid.ID) (*Movie, error) {
 
 func (repo *movieRepoGorm) FindAll(ids []xid.ID) ([]*Movie, error) {
 	ms := make([]*Movie, len(ids))
-	err := repo.DB.
-		Preload("DownloadUrl").
-		Find(&ms, "id IN ?", ids).
-		Group("title").
-		Error
-	ms2 := make([]*Movie, 0)
-	for _, id := range ids {
-		for _, m := range ms {
-			if id.Compare(m.ID) == 0 {
-				ms2 = append(ms2, m)
-			}
+	for i, id := range ids {
+		ms[i] = &Movie{}
+		ms[i].ID = id
+		if err := repo.DB.Preload("DownloadUrl").Take(ms[i]).Error; err != nil {
+			return nil, err
 		}
 	}
-	return ms2, err
+	return ms, nil
 }
 
 func (repo *movieRepoGorm) Delete(id xid.ID) error {
