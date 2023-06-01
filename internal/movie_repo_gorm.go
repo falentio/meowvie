@@ -30,15 +30,21 @@ func (repo *movieRepoGorm) Find(id xid.ID) (*Movie, error) {
 }
 
 func (repo *movieRepoGorm) FindAll(ids []xid.ID) ([]*Movie, error) {
-	ms := make([]*Movie, 0)
+	ms := make([]*Movie, len(ids))
 	err := repo.DB.
 		Preload("DownloadUrl").
-		Order("id DESC").
-		Limit(10).
 		Find(&ms, "id IN ?", ids).
 		Group("title").
 		Error
-	return ms, err
+	ms2 := make([]*Movie, 0)
+	for _, id := range ids {
+		for _, m := range ms {
+			if id.Compare(m.ID) == 0 {
+				ms2 = append(ms2, m)
+			}
+		}
+	}
+	return ms2, err
 }
 
 func (repo *movieRepoGorm) Delete(id xid.ID) error {

@@ -2,14 +2,12 @@ package internal
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/mapping"
 	"github.com/caarlos0/env/v8"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -71,10 +69,6 @@ func NewApplication() *Application {
 	app.Use(recover.New())
 	app.Use(requestid.New())
 	app.Use(logger.New())
-	app.Use(limiter.New(limiter.Config{
-		Max:        50,
-		Expiration: time.Minute,
-	}))
 	app.Mount("movie", NewMovieController(ms))
 	return &Application{app, cfg}
 }

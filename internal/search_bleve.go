@@ -13,14 +13,18 @@ func NewSearchBleve(index bleve.Index) Search {
 }
 
 func (search *searchBleve) Query(term string) ([]string, error) {
-	q := bleve.NewFuzzyQuery(term)
+	q := bleve.NewMatchQuery(term)
 	req := bleve.NewSearchRequest(q)
+	req.SortBy([]string{"-_score"})
 	res, err := search.Index.Search(req)
 	if err != nil {
 		return nil, err
 	}
 	var result []string
 	for i := range res.Hits {
+		if i > 9 {
+			break
+		}
 		id := res.Hits[i].ID
 		result = append(result, id)
 	}
