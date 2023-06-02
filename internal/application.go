@@ -53,7 +53,10 @@ func NewApplication() *Application {
 	if err != nil {
 		panic("failed to open database, " + err.Error())
 	}
-	db.Raw("delete from download_urls where coalesce(id, '') = '';")
+	err = db.Raw("delete from download_urls where coalesce(id, '') = '';").Error
+	if err != nil {
+		panic("failed to open database, " + err.Error())
+	}
 	if err := db.AutoMigrate(&Movie{}, &DownloadUrl{}); err != nil {
 		panic("failed to do database migration, " + err.Error())
 	}

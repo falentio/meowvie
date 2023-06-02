@@ -14,8 +14,11 @@ func NewSearchBleve(index bleve.Index) Search {
 
 func (search *searchBleve) Query(term string) ([]string, error) {
 	q := bleve.NewMatchQuery(term)
-	q.Fuzziness = 1
-	req := bleve.NewSearchRequest(q)
+	q.SetFuzziness(1)
+	qq := bleve.NewQueryStringQuery(term)
+	qq.SetBoost(1.1)
+	qqq := bleve.NewDisjunctionQuery(q, qq)
+	req := bleve.NewSearchRequest(qqq)
 	req.SortBy([]string{"-_score"})
 	res, err := search.Index.Search(req)
 	if err != nil {
