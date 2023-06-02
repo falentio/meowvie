@@ -8,6 +8,7 @@ import (
 	"github.com/caarlos0/env/v8"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -16,10 +17,11 @@ import (
 )
 
 type Config struct {
-	Port        string `env:"PORT" envDefault:"8080"`
-	DatabaseUrl string `env:"DATABASE_URL" envDefault:"file:./database/database.db"`
-	SearchUrl   string `env:"SEARCH_URL" envDefault:"./database/bleve"`
-	ApiSecret   string `env:"API_SECRET" envDefault:"secret"`
+	Port         string `env:"PORT" envDefault:"8080"`
+	DatabaseUrl  string `env:"DATABASE_URL" envDefault:"file:./database/database.db?_journal=WAL"`
+	SearchUrl    string `env:"SEARCH_URL" envDefault:"./database/bleve"`
+	ApiSecret    string `env:"API_SECRET" envDefault:"secret"`
+	AllowOrigins string `env:"ALLOW_ORIGINS" envDefault:"*"`
 }
 
 type Application struct {
@@ -53,14 +55,14 @@ func NewApplication() *Application {
 	if err != nil {
 		panic("failed to open database, " + err.Error())
 	}
-	err = db.Raw("delete from download_urls where coalesce(id, '') = '';").Error
+	err = db.Raw("delete from download_urls where coalesce(id, '') = ''").Error
 	if err != nil {
 		panic("failed to open database, " + err.Error())
 	}
 	if err := db.AutoMigrate(&Movie{}, &DownloadUrl{}); err != nil {
 		panic("failed to do database migration, " + err.Error())
 	}
-	movieRepo := NewMovieRepoGorm(db)
+	movieRepo := NewMovieRepoLru(NewMovieRepoGorm(db))
 	downloadUrlRepo := NewDownloadUrlRepoGorm(db)
 
 	ms := NewMovieService(movieRepo, downloadUrlRepo, search, signer)
@@ -73,6 +75,10 @@ func NewApplication() *Application {
 	app.Use(recover.New())
 	app.Use(requestid.New())
 	app.Use(logger.New())
+	app.Use(cors.New(cors.Config{
+		MaxAge:       86400,
+		AllowOrigins: cfg.AllowOrigins,
+	}))
 	app.Mount("movie", NewMovieController(ms))
 	return &Application{app, cfg}
 }
