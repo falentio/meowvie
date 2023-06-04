@@ -4,11 +4,16 @@ Just some random project that attempt to ease and simplify getting movie or anim
 
 ## Tech Stacks
 * Golang as Backend
-  > I choose golang beacuse I need good performance, and good search engine library (prevent use elasticsearch or equivalent) 
+  
+  I choose golang beacuse I need good performance, and good search engine library (prevent to use elasticsearch or equivalent) 
+
 * Nodejs as Crawler
-  > Because my Python skill is poor, so I dont think any other than Nodejs has good ecosystem for web scraping.
+  
+  Because my Python skill is poor, so I dont think any other than Nodejs has good ecosystem for web scraping.
+
 * Deno as Frontend
-  > It just ease to develop, ease to deploy
+  
+  It just easy to develop, easy to deploy
 
 ## Performance
 No benchmark was done, but I was tested it with 30 concurrent queries on 256 MB ram, and so far so good, the slowest is response time is arround `500ms`
