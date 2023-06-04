@@ -7,7 +7,7 @@ app = "meowvie"
 primary_region = "sin"
 
 [env]
-  ALLOW_ORIGINS="meowvie.falentio.com"
+  ALLOW_ORIGINS="https://*.falentio.com, https://localhost"
 
 [build]
   dockerfile = "Dockerfile"

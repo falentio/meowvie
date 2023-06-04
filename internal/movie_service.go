@@ -62,6 +62,9 @@ func (ms *MovieService) Find(id xid.ID) (*Movie, error) {
 	return ms.MovieRepo.Find(id)
 }
 
-func (ms *MovieService) Delete(id xid.ID) error {
+func (ms *MovieService) Delete(id xid.ID, signature string) error {
+	if err := ms.Signer.Compare(id.String(), signature); err != nil {
+		return fiber.NewError(400, "Invalid Signature")
+	}
 	return ms.MovieRepo.Delete(id)
 }
