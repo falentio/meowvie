@@ -26,3 +26,7 @@ Summary:
   Size/request: 0 B
   Size/sec:     0 B
 ```
+
+## Movie/Anime sources
+* Otakudesu
+* Melongmovie (Partially)

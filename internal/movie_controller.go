@@ -58,7 +58,7 @@ func (mc *movieController) Delete(c *fiber.Ctx) error {
 		return fiber.NewError(400, "invalid id")
 	}
 
-	if err := mc.MovieService.Delete(id); err != nil {
+	if err := mc.MovieService.Delete(id, c.Query("signature")); err != nil {
 		return fiber.NewError(404, "not found")
 	}
 	return c.SendStatus(204)
