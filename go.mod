@@ -15,6 +15,7 @@ require (
 
 require (
 	github.com/hashicorp/golang-lru v1.0.1 // indirect
+	github.com/rs/zerolog v1.29.1 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/tools v0.5.0 // indirect
 )
@@ -42,7 +43,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.16.3 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.18 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.6.1

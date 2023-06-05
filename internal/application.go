@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/mapping"
@@ -9,19 +10,22 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 type Config struct {
-	Port         string `env:"PORT" envDefault:"8080"`
-	DatabaseUrl  string `env:"DATABASE_URL" envDefault:"file:./database/database.db?_journal=WAL"`
-	SearchUrl    string `env:"SEARCH_URL" envDefault:"./database/bleve"`
-	ApiSecret    string `env:"API_SECRET" envDefault:"secret"`
-	AllowOrigins string `env:"ALLOW_ORIGINS" envDefault:"*"`
+	Port             string `env:"PORT" envDefault:"8080"`
+	DatabaseUrl      string `env:"DATABASE_URL" envDefault:"file:./database/database.db?_journal=WAL"`
+	SearchUrl        string `env:"SEARCH_URL" envDefault:"./database/bleve"`
+	ApiSecret        string `env:"API_SECRET" envDefault:"secret"`
+	AllowOrigins     string `env:"ALLOW_ORIGINS" envDefault:"*"`
+	AutoMigrate      bool   `env:"AUTO_MIGRATE" envDefualt:"false"`
+	LogflareSourceID string `env:"LOGFLARE_SOURCE_ID"`
+	LogflareSecret   string `env:"LOGFLARE_SECRET"`
 }
 
 type Application struct {
@@ -55,12 +59,19 @@ func NewApplication() *Application {
 	if err != nil {
 		panic("failed to open database, " + err.Error())
 	}
-	err = db.Raw("delete from download_urls where coalesce(id, '') = ''").Error
-	if err != nil {
-		panic("failed to open database, " + err.Error())
+	if cfg.AutoMigrate {
+		err = db.Raw("delete from download_urls where coalesce(id, '') = ''").Error
+		if err != nil {
+			panic("failed to open database, " + err.Error())
+		}
+		if err := db.AutoMigrate(&Movie{}, &DownloadUrl{}); err != nil {
+			panic("failed to do database migration, " + err.Error())
+		}
 	}
-	if err := db.AutoMigrate(&Movie{}, &DownloadUrl{}); err != nil {
-		panic("failed to do database migration, " + err.Error())
+	if cfg.LogflareSecret != "" && cfg.LogflareSourceID != "" {
+		logflare := NewZerologLogflare(cfg.LogflareSourceID, cfg.LogflareSecret)
+		multi := zerolog.MultiLevelWriter(logflare, os.Stdout)
+		log.Logger = log.Logger.Output(multi)
 	}
 	movieRepo := NewMovieRepoLru(NewMovieRepoGorm(db))
 	downloadUrlRepo := NewDownloadUrlRepoGorm(db)
@@ -73,8 +84,8 @@ func NewApplication() *Application {
 		JSONDecoder:       json.Unmarshal,
 	})
 	app.Use(recover.New())
-	app.Use(requestid.New())
-	app.Use(logger.New())
+	app.Use(RequestID)
+	app.Use(Logger)
 	app.Use(cors.New(cors.Config{
 		MaxAge:       86400,
 		AllowOrigins: cfg.AllowOrigins,
