@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/rs/xid"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
 
@@ -17,6 +18,22 @@ func NewMovieRepoGorm(DB *gorm.DB) MovieRepo {
 func (repo *movieRepoGorm) Create(m *Movie) error {
 	m.ID = xid.New()
 	return repo.DB.Omit("DownloadUrl").Create(m).Error
+}
+
+func (repo *movieRepoGorm) GetAll() (chan *Movie, error) {
+	rows, err := repo.DB.Model(&Movie{}).Rows()
+	ch := make(chan *Movie)
+	go func() {
+		m := &Movie{}
+		for rows.Next() {
+			if err := repo.DB.ScanRows(rows, m); err != nil {
+				log.Error().Err(err).Interface("movie", m).Msg("error while iterate")
+			}
+			ch <- m
+		}
+		close(ch)
+	}()
+	return ch, err
 }
 
 func (repo *movieRepoGorm) Find(id xid.ID) (*Movie, error) {

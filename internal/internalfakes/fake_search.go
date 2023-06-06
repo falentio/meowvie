@@ -7,11 +7,20 @@ import (
 )
 
 type FakeSearch struct {
-	InsertStub        func(string, string) error
+	ClearStub        func() error
+	clearMutex       sync.RWMutex
+	clearArgsForCall []struct {
+	}
+	clearReturns struct {
+		result1 error
+	}
+	clearReturnsOnCall map[int]struct {
+		result1 error
+	}
+	InsertStub        func(*internal.SearchInsertItem) error
 	insertMutex       sync.RWMutex
 	insertArgsForCall []struct {
-		arg1 string
-		arg2 string
+		arg1 *internal.SearchInsertItem
 	}
 	insertReturns struct {
 		result1 error
@@ -47,19 +56,71 @@ type FakeSearch struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeSearch) Insert(arg1 string, arg2 string) error {
+func (fake *FakeSearch) Clear() error {
+	fake.clearMutex.Lock()
+	ret, specificReturn := fake.clearReturnsOnCall[len(fake.clearArgsForCall)]
+	fake.clearArgsForCall = append(fake.clearArgsForCall, struct {
+	}{})
+	stub := fake.ClearStub
+	fakeReturns := fake.clearReturns
+	fake.recordInvocation("Clear", []interface{}{})
+	fake.clearMutex.Unlock()
+	if stub != nil {
+		return stub()
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeSearch) ClearCallCount() int {
+	fake.clearMutex.RLock()
+	defer fake.clearMutex.RUnlock()
+	return len(fake.clearArgsForCall)
+}
+
+func (fake *FakeSearch) ClearCalls(stub func() error) {
+	fake.clearMutex.Lock()
+	defer fake.clearMutex.Unlock()
+	fake.ClearStub = stub
+}
+
+func (fake *FakeSearch) ClearReturns(result1 error) {
+	fake.clearMutex.Lock()
+	defer fake.clearMutex.Unlock()
+	fake.ClearStub = nil
+	fake.clearReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeSearch) ClearReturnsOnCall(i int, result1 error) {
+	fake.clearMutex.Lock()
+	defer fake.clearMutex.Unlock()
+	fake.ClearStub = nil
+	if fake.clearReturnsOnCall == nil {
+		fake.clearReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.clearReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeSearch) Insert(arg1 *internal.SearchInsertItem) error {
 	fake.insertMutex.Lock()
 	ret, specificReturn := fake.insertReturnsOnCall[len(fake.insertArgsForCall)]
 	fake.insertArgsForCall = append(fake.insertArgsForCall, struct {
-		arg1 string
-		arg2 string
-	}{arg1, arg2})
+		arg1 *internal.SearchInsertItem
+	}{arg1})
 	stub := fake.InsertStub
 	fakeReturns := fake.insertReturns
-	fake.recordInvocation("Insert", []interface{}{arg1, arg2})
+	fake.recordInvocation("Insert", []interface{}{arg1})
 	fake.insertMutex.Unlock()
 	if stub != nil {
-		return stub(arg1, arg2)
+		return stub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
@@ -73,17 +134,17 @@ func (fake *FakeSearch) InsertCallCount() int {
 	return len(fake.insertArgsForCall)
 }
 
-func (fake *FakeSearch) InsertCalls(stub func(string, string) error) {
+func (fake *FakeSearch) InsertCalls(stub func(*internal.SearchInsertItem) error) {
 	fake.insertMutex.Lock()
 	defer fake.insertMutex.Unlock()
 	fake.InsertStub = stub
 }
 
-func (fake *FakeSearch) InsertArgsForCall(i int) (string, string) {
+func (fake *FakeSearch) InsertArgsForCall(i int) *internal.SearchInsertItem {
 	fake.insertMutex.RLock()
 	defer fake.insertMutex.RUnlock()
 	argsForCall := fake.insertArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
+	return argsForCall.arg1
 }
 
 func (fake *FakeSearch) InsertReturns(result1 error) {
@@ -242,6 +303,8 @@ func (fake *FakeSearch) QueryReturnsOnCall(i int, result1 []string, result2 erro
 func (fake *FakeSearch) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.clearMutex.RLock()
+	defer fake.clearMutex.RUnlock()
 	fake.insertMutex.RLock()
 	defer fake.insertMutex.RUnlock()
 	fake.insertBatchMutex.RLock()

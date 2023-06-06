@@ -14,7 +14,7 @@ type DownloadUrl struct {
 	Movie   *Movie `json:"movie"`
 }
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . DownloadUrlRepo
+//counterfeiter:generate . DownloadUrlRepo
 
 type DownloadUrlRepo interface {
 	Create(d *DownloadUrl) error

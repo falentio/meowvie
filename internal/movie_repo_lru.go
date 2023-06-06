@@ -28,6 +28,10 @@ func (r *movieRepoLru) Find(id xid.ID) (*Movie, error) {
 	return m, nil
 }
 
+func (r *movieRepoLru) GetAll() (chan *Movie, error) {
+	return r.repo.GetAll()
+}
+
 func (r *movieRepoLru) FindAll(ids []xid.ID) ([]*Movie, error) {
 	ms := make([]*Movie, len(ids))
 	for i := range ids {

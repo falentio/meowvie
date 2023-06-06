@@ -1,22 +1,33 @@
 # Meowvie
 
-Just some random project that attempt to ease and simplify getting movie or anime download urls.
+Just some random project that attempt to ease and simplify getting movie or
+anime download urls. This project divided into 3 repositories
+
+- Backend (this)
+- [Frontent](https://github.com/falentio/meowvie-frontend)
+- [Crawler](https://github.com/falentio/meowvie-crawler)
 
 ## Tech Stacks
-* Golang as Backend
-  
-  I choose golang beacuse I need good performance, and good search engine library (prevent to use elasticsearch or equivalent) 
 
-* Nodejs as Crawler
-  
-  Because my Python skill is poor, so I dont think any other than Nodejs has good ecosystem for web scraping.
+- Golang as Backend
 
-* Deno as Frontend
-  
+  I choose golang beacuse I need good performance, and good search engine
+  library (prevent to use elasticsearch or equivalent)
+
+- Deno as Frontend
+
   It just easy to develop, easy to deploy
 
+- Nodejs as Crawler
+
+  Because my Python skill is poor, so I dont think any other than Nodejs has
+  good ecosystem for web scraping.
+
 ## Performance
-No benchmark was done, but I was tested it with 30 concurrent queries on 256 MB ram, and so far so good, the slowest is response time is arround `500ms`
+
+No benchmark was done, but I was tested it with 30 concurrent queries on 256 MB
+ram, and so far so good, the slowest response time is arround `500ms`
+
 ```
 ❯ oha "https://meowvie.fly.dev/movie/search?q=borto" -z 10s -c 30 -q 30
 Summary:
@@ -33,5 +44,6 @@ Summary:
 ```
 
 ## Movie/Anime sources
-* Otakudesu
-* Melongmovie (Partially)
+
+- Otakudesu
+- Melongmovie (Partially)

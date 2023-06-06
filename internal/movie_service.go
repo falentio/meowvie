@@ -40,7 +40,7 @@ func (ms *MovieService) Create(m *Movie, signature string) (*Movie, error) {
 	if err := ms.DownloadUrlRepo.CreateBatch(m.DownloadUrl); err != nil {
 		return nil, err
 	}
-	if err := ms.Search.Insert(m.ID.String(), m.Title); err != nil {
+	if err := ms.Search.Insert(&SearchInsertItem{m.ID.String(), m.Title, m.Provider}); err != nil {
 		return nil, err
 	}
 	return m, nil

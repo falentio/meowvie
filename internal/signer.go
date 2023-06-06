@@ -14,7 +14,7 @@ var ErrSignatureNotMatch = errors.New("signature not match")
 
 type Signer interface {
 	Sign(string) (string, error)
-	Compare(string, string) error
+	Compare(data, signature string) error
 }
 
 type signer struct {

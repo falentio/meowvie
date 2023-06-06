@@ -18,11 +18,12 @@ type MovieSignature struct {
 	Signature string `json:"signature"`
 }
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . MovieRepo
+//counterfeiter:generate . MovieRepo
 
 type MovieRepo interface {
 	Create(*Movie) error
 	Find(xid.ID) (*Movie, error)
 	FindAll([]xid.ID) ([]*Movie, error)
+	GetAll() (chan *Movie, error)
 	Delete(xid.ID) error
 }

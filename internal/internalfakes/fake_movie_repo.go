@@ -57,6 +57,18 @@ type FakeMovieRepo struct {
 		result1 []*internal.Movie
 		result2 error
 	}
+	GetAllStub        func() (chan *internal.Movie, error)
+	getAllMutex       sync.RWMutex
+	getAllArgsForCall []struct {
+	}
+	getAllReturns struct {
+		result1 chan *internal.Movie
+		result2 error
+	}
+	getAllReturnsOnCall map[int]struct {
+		result1 chan *internal.Movie
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -316,6 +328,62 @@ func (fake *FakeMovieRepo) FindAllReturnsOnCall(i int, result1 []*internal.Movie
 	}{result1, result2}
 }
 
+func (fake *FakeMovieRepo) GetAll() (chan *internal.Movie, error) {
+	fake.getAllMutex.Lock()
+	ret, specificReturn := fake.getAllReturnsOnCall[len(fake.getAllArgsForCall)]
+	fake.getAllArgsForCall = append(fake.getAllArgsForCall, struct {
+	}{})
+	stub := fake.GetAllStub
+	fakeReturns := fake.getAllReturns
+	fake.recordInvocation("GetAll", []interface{}{})
+	fake.getAllMutex.Unlock()
+	if stub != nil {
+		return stub()
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeMovieRepo) GetAllCallCount() int {
+	fake.getAllMutex.RLock()
+	defer fake.getAllMutex.RUnlock()
+	return len(fake.getAllArgsForCall)
+}
+
+func (fake *FakeMovieRepo) GetAllCalls(stub func() (chan *internal.Movie, error)) {
+	fake.getAllMutex.Lock()
+	defer fake.getAllMutex.Unlock()
+	fake.GetAllStub = stub
+}
+
+func (fake *FakeMovieRepo) GetAllReturns(result1 chan *internal.Movie, result2 error) {
+	fake.getAllMutex.Lock()
+	defer fake.getAllMutex.Unlock()
+	fake.GetAllStub = nil
+	fake.getAllReturns = struct {
+		result1 chan *internal.Movie
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeMovieRepo) GetAllReturnsOnCall(i int, result1 chan *internal.Movie, result2 error) {
+	fake.getAllMutex.Lock()
+	defer fake.getAllMutex.Unlock()
+	fake.GetAllStub = nil
+	if fake.getAllReturnsOnCall == nil {
+		fake.getAllReturnsOnCall = make(map[int]struct {
+			result1 chan *internal.Movie
+			result2 error
+		})
+	}
+	fake.getAllReturnsOnCall[i] = struct {
+		result1 chan *internal.Movie
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeMovieRepo) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -327,6 +395,8 @@ func (fake *FakeMovieRepo) Invocations() map[string][][]interface{} {
 	defer fake.findMutex.RUnlock()
 	fake.findAllMutex.RLock()
 	defer fake.findAllMutex.RUnlock()
+	fake.getAllMutex.RLock()
+	defer fake.getAllMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
