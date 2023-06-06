@@ -1,14 +1,16 @@
 package internal
 
 type SearchInsertItem struct {
-	ID   string
-	Text string
+	ID       string
+	Title    string
+	Provider string
 }
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . Search
+//counterfeiter:generate . Search
 
 type Search interface {
 	Query(term string) ([]string, error)
-	Insert(id string, text string) error
+	Insert(*SearchInsertItem) error
 	InsertBatch(items []*SearchInsertItem) error
+	Clear() error
 }

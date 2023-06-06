@@ -2,7 +2,10 @@ package internal
 
 import (
 	"github.com/blevesearch/bleve"
+	"github.com/rs/zerolog/log"
 )
+
+var _ Search = new(searchBleve)
 
 type searchBleve struct {
 	Index bleve.Index
@@ -15,8 +18,8 @@ func NewSearchBleve(index bleve.Index) Search {
 func (search *searchBleve) Query(term string) ([]string, error) {
 	q := bleve.NewMatchQuery(term)
 	q.SetFuzziness(1)
+	q.SetBoost(1.9)
 	qq := bleve.NewQueryStringQuery(term)
-	qq.SetBoost(1.1)
 	qqq := bleve.NewDisjunctionQuery(q, qq)
 	req := bleve.NewSearchRequest(qqq)
 	req.SortBy([]string{"-_score"})
@@ -26,7 +29,11 @@ func (search *searchBleve) Query(term string) ([]string, error) {
 	}
 	var result []string
 	for i := range res.Hits {
+		log.Debug().Float64("score", res.Hits[i].Score).Msg("search")
 		if i > 9 {
+			break
+		}
+		if res.Hits[i].Score < 0.2 {
 			break
 		}
 		id := res.Hits[i].ID
@@ -35,8 +42,8 @@ func (search *searchBleve) Query(term string) ([]string, error) {
 	return result, nil
 }
 
-func (search *searchBleve) Insert(id string, text string) error {
-	return search.InsertBatch([]*SearchInsertItem{{id, text}})
+func (search *searchBleve) Insert(item *SearchInsertItem) error {
+	return search.InsertBatch([]*SearchInsertItem{item})
 }
 
 func (search *searchBleve) InsertBatch(items []*SearchInsertItem) error {
@@ -45,6 +52,19 @@ func (search *searchBleve) InsertBatch(items []*SearchInsertItem) error {
 		if err := b.Index(items[i].ID, items); err != nil {
 			return err
 		}
+	}
+	return search.Index.Batch(b)
+}
+
+func (search *searchBleve) Clear() error {
+	req := bleve.NewSearchRequest(bleve.NewMatchAllQuery())
+	res, err := search.Index.Search(req)
+	if err != nil {
+		return err
+	}
+	b := search.Index.NewBatch()
+	for _, h := range res.Hits {
+		b.Delete(h.ID)
 	}
 	return search.Index.Batch(b)
 }

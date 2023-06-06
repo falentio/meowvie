@@ -23,17 +23,17 @@ func TestSearch(t *testing.T) {
 		search := searchs[i]
 		t.Run(i, func(t *testing.T) {
 			t.Run("insert", func(t *testing.T) {
-				require.Nil(t, search.Insert("foo", "foo"))
-				require.Nil(t, search.Insert("bar", "bar"))
-				require.Nil(t, search.Insert("baz", "baz"))
-				require.Nil(t, search.Insert("qux", "qux"))
+				require.Nil(t, search.Insert(&SearchInsertItem{"foo", "foo", "test"}))
+				require.Nil(t, search.Insert(&SearchInsertItem{"bar", "bar", "test"}))
+				require.Nil(t, search.Insert(&SearchInsertItem{"baz", "baz", "test"}))
+				require.Nil(t, search.Insert(&SearchInsertItem{"qux", "qux", "test"}))
 			})
 
 			t.Run("insert batch", func(t *testing.T) {
 				items := []*SearchInsertItem{
-					{"anjay", "anjay"},
-					{"anu", "anu"},
-					{"nonsi", "nonsi"},
+					{"anjay", "anjay", "test"},
+					{"anu", "anu", "test"},
+					{"nonsi", "nonsi", "test"},
 				}
 				require.Nil(t, search.InsertBatch(items))
 			})
