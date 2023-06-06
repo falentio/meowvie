@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -29,7 +30,7 @@ func (z *ZerologLogflareWriter) Write(b []byte) (int, error) {
 		return 0, err
 	}
 
-	msg := fmt.Sprintf("%s [%s] %s | %.0f | %f | %s", data["message"], data["method"], data["url"], data["status"], data["responseTimeMilli"], data["requestId"])
+	msg := fmt.Sprintf("%s [%s] %s | %.0f | %f | %s | %s", data["message"], data["method"], data["ip"], data["status"], data["responseTimeMilli"], data["requestId"], data["url"])
 	body := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(body).Encode(fiber.Map{
 		"event_message": msg,
@@ -45,20 +46,22 @@ func (z *ZerologLogflareWriter) Write(b []byte) (int, error) {
 	req.Header.Set("X-Api-Key", z.secret)
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return 0, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode > 399 {
-		msg := bytes.NewBuffer(nil)
-		_, err := msg.ReadFrom(resp.Body)
+	go func() {
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
-			return 0, err
+			fmt.Fprintf(os.Stderr, "Logflare: %v", err)
 		}
-		return 0, fmt.Errorf("%d status code received, with message %q", resp.StatusCode, msg.String())
-	}
+		defer resp.Body.Close()
+
+		if resp.StatusCode > 399 {
+			msg := bytes.NewBuffer(nil)
+			_, err := msg.ReadFrom(resp.Body)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Logflare: %v", err)
+			}
+			fmt.Fprintf(os.Stderr, "Logflare: %d status code received, with message %q", resp.StatusCode, msg.String())
+		}
+	}()
 
 	return len(b), nil
 }

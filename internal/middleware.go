@@ -21,25 +21,26 @@ func Logger(ctx *fiber.Ctx) error {
 	start := time.Now()
 
 	chainErr := ctx.Next()
-
-	end := time.Now()
-	url := ctx.OriginalURL()
-	ip := ctx.IP()
-	method := ctx.Method()
-	hostname := ctx.Hostname()
-	origin := ctx.Get(fiber.HeaderOrigin)
-	log.
-		Info().
-		Str("requestId", idStr).
-		Float64("responseTimeMilli", float64(end.Sub(start).Microseconds())/1000).
-		Int("status", ctx.Context().Response.StatusCode()).
-		Str("url", url).
-		Str("ip", ip).
-		Str("method", method).
-		Str("hostname", hostname).
-		Str("origin", origin).
-		Err(chainErr).
-		Msg("request received")
+	if log.Info().Enabled() {
+		end := time.Now()
+		url := ctx.OriginalURL()
+		ip := ctx.IP()
+		method := ctx.Method()
+		hostname := ctx.Hostname()
+		origin := ctx.Get(fiber.HeaderOrigin)
+		status := ctx.Context().Response.StatusCode()
+		log.Info().
+			Str("requestId", idStr).
+			Float64("responseTimeMilli", float64(end.Sub(start).Microseconds())/1000).
+			Int("status", status).
+			Str("url", url).
+			Str("ip", ip).
+			Str("method", method).
+			Str("hostname", hostname).
+			Str("origin", origin).
+			Err(chainErr).
+			Msg("request received")
+	}
 
 	return chainErr
 }
