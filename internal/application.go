@@ -54,8 +54,7 @@ func NewApplication() *Application {
 		panic("failed to open bleve index, " + err.Error())
 	}
 	search := NewSearchBleve(index)
-	f, _ := index.Fields()
-	log.Debug().Any("f", f).Msg("field")
+
 	db, err := gorm.Open(sqlite.Open(cfg.DatabaseUrl))
 	if err != nil {
 		panic("failed to open database, " + err.Error())
