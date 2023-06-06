@@ -2,7 +2,6 @@ package internal
 
 import (
 	"github.com/blevesearch/bleve"
-	"github.com/rs/zerolog/log"
 )
 
 var _ Search = new(searchBleve)
@@ -29,7 +28,6 @@ func (search *searchBleve) Query(term string) ([]string, error) {
 	}
 	var result []string
 	for i := range res.Hits {
-		log.Debug().Float64("score", res.Hits[i].Score).Msg("search")
 		if i > 9 {
 			break
 		}
