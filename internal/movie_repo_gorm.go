@@ -20,6 +20,15 @@ func (repo *movieRepoGorm) Create(m *Movie) error {
 	return repo.DB.Omit("DownloadUrl").Create(m).Error
 }
 
+func (repo *movieRepoGorm) ProviderList() ([]string, error) {
+	providers := make([]string, 5)
+	err := repo.DB.Model(&Movie{}).Distinct().Pluck("provider", &providers).Error
+	if err != nil {
+		return nil, err
+	}
+	return providers, nil
+}
+
 func (repo *movieRepoGorm) GetAll() (chan *Movie, error) {
 	rows, err := repo.DB.Model(&Movie{}).Rows()
 	ch := make(chan *Movie)

@@ -10,6 +10,7 @@ func NewMovieController(ms *MovieService) *fiber.App {
 	app := fiber.New()
 	app.Post("/create", mc.Create)
 	app.Get("/search", mc.Query)
+	app.Get("/provider", mc.ProviderList)
 	app.Get("/:id", mc.Find)
 	app.Delete("/:id", mc.Delete)
 	return app
@@ -50,6 +51,14 @@ func (mc *movieController) Find(c *fiber.Ctx) error {
 		return fiber.NewError(404, "not found")
 	}
 	return c.JSON(m)
+}
+
+func (mc *movieController) ProviderList(c *fiber.Ctx) error {
+	providers, err := mc.MovieService.ProviderList()
+	if err != nil {
+		return err
+	}
+	return c.JSON(providers)
 }
 
 func (mc *movieController) Delete(c *fiber.Ctx) error {

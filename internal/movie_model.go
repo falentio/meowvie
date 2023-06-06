@@ -22,6 +22,7 @@ type MovieSignature struct {
 
 type MovieRepo interface {
 	Create(*Movie) error
+	ProviderList() ([]string, error)
 	Find(xid.ID) (*Movie, error)
 	FindAll([]xid.ID) ([]*Movie, error)
 	GetAll() (chan *Movie, error)

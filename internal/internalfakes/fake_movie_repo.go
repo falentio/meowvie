@@ -69,6 +69,18 @@ type FakeMovieRepo struct {
 		result1 chan *internal.Movie
 		result2 error
 	}
+	ProviderListStub        func() ([]string, error)
+	providerListMutex       sync.RWMutex
+	providerListArgsForCall []struct {
+	}
+	providerListReturns struct {
+		result1 []string
+		result2 error
+	}
+	providerListReturnsOnCall map[int]struct {
+		result1 []string
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -384,6 +396,62 @@ func (fake *FakeMovieRepo) GetAllReturnsOnCall(i int, result1 chan *internal.Mov
 	}{result1, result2}
 }
 
+func (fake *FakeMovieRepo) ProviderList() ([]string, error) {
+	fake.providerListMutex.Lock()
+	ret, specificReturn := fake.providerListReturnsOnCall[len(fake.providerListArgsForCall)]
+	fake.providerListArgsForCall = append(fake.providerListArgsForCall, struct {
+	}{})
+	stub := fake.ProviderListStub
+	fakeReturns := fake.providerListReturns
+	fake.recordInvocation("ProviderList", []interface{}{})
+	fake.providerListMutex.Unlock()
+	if stub != nil {
+		return stub()
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeMovieRepo) ProviderListCallCount() int {
+	fake.providerListMutex.RLock()
+	defer fake.providerListMutex.RUnlock()
+	return len(fake.providerListArgsForCall)
+}
+
+func (fake *FakeMovieRepo) ProviderListCalls(stub func() ([]string, error)) {
+	fake.providerListMutex.Lock()
+	defer fake.providerListMutex.Unlock()
+	fake.ProviderListStub = stub
+}
+
+func (fake *FakeMovieRepo) ProviderListReturns(result1 []string, result2 error) {
+	fake.providerListMutex.Lock()
+	defer fake.providerListMutex.Unlock()
+	fake.ProviderListStub = nil
+	fake.providerListReturns = struct {
+		result1 []string
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeMovieRepo) ProviderListReturnsOnCall(i int, result1 []string, result2 error) {
+	fake.providerListMutex.Lock()
+	defer fake.providerListMutex.Unlock()
+	fake.ProviderListStub = nil
+	if fake.providerListReturnsOnCall == nil {
+		fake.providerListReturnsOnCall = make(map[int]struct {
+			result1 []string
+			result2 error
+		})
+	}
+	fake.providerListReturnsOnCall[i] = struct {
+		result1 []string
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeMovieRepo) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -397,6 +465,8 @@ func (fake *FakeMovieRepo) Invocations() map[string][][]interface{} {
 	defer fake.findAllMutex.RUnlock()
 	fake.getAllMutex.RLock()
 	defer fake.getAllMutex.RUnlock()
+	fake.providerListMutex.RLock()
+	defer fake.providerListMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

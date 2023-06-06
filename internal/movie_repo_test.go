@@ -19,6 +19,7 @@ func TestMovieRepo(t *testing.T) {
 		repo := repos[name]
 		t.Run(name, func(t *testing.T) {
 			m := &Movie{
+				Provider:     "test",
 				Title:        "testing",
 				PageUrl:      "https://example.com",
 				ThumbnailUrl: "https://example.com",
@@ -27,6 +28,12 @@ func TestMovieRepo(t *testing.T) {
 				err := repo.Create(m)
 				require.Nil(t, err)
 				require.NotZero(t, m.ID)
+			})
+
+			t.Run("providerList", func(t *testing.T) {
+				providers, err := repo.ProviderList()
+				require.Nil(t, err)
+				require.Contains(t, providers, "test")
 			})
 
 			t.Run("find", func(t *testing.T) {

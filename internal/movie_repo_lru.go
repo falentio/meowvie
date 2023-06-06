@@ -44,6 +44,10 @@ func (r *movieRepoLru) FindAll(ids []xid.ID) ([]*Movie, error) {
 	return ms, nil
 }
 
+func (r *movieRepoLru) ProviderList() ([]string, error) {
+	return r.repo.ProviderList()
+}
+
 func (r *movieRepoLru) Delete(id xid.ID) error {
 	r.cache.Remove(id.String())
 	return r.repo.Delete(id)
