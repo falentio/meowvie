@@ -19,6 +19,7 @@ func (search *searchBleve) Query(term string) ([]string, error) {
 	q.SetFuzziness(1)
 	q.SetBoost(1.9)
 	qq := bleve.NewQueryStringQuery(term)
+	qq.SetBoost(0.8)
 	qqq := bleve.NewDisjunctionQuery(q, qq)
 	req := bleve.NewSearchRequest(qqq)
 	req.SortBy([]string{"-_score"})
