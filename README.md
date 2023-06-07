@@ -5,7 +5,7 @@ anime download urls. This project divided into 3 repositories
 
 - Backend (this)
 - [Frontent](https://github.com/falentio/meowvie-frontend)
-- [Crawler](https://github.com/falentio/meowvie-crawler)
+- [Crawler](https://github.com/falentio/meowvie-collector)
 
 ## Tech Stacks
 
@@ -25,7 +25,7 @@ anime download urls. This project divided into 3 repositories
 
 ## Performance
 
-No benchmark was done, but I was tested it with 30 concurrent queries on 256 MB
+No benchmark was done, but it was tested with 30 concurrent queries on 256 MB
 ram, and so far so good, the slowest response time is arround `500ms`
 
 ```
