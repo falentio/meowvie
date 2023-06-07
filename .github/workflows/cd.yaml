@@ -33,6 +33,7 @@ jobs:
             type=ref,event=branch
             type=ref,event=tag
             type=ref,event=pr
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request'
