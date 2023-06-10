@@ -22,7 +22,7 @@ func (search *searchBleve) Query(term string) ([]string, error) {
 	qq.SetBoost(0.8)
 	qqq := bleve.NewDisjunctionQuery(q, qq)
 	req := bleve.NewSearchRequest(qqq)
-	req.SortBy([]string{"-_score"})
+	req.SortBy([]string{"-_score", "-_id"})
 	res, err := search.Index.Search(req)
 	if err != nil {
 		return nil, err
