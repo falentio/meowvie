@@ -4,7 +4,7 @@ Just some random project that attempt to ease and simplify getting movie or
 anime download urls. This project divided into 3 repositories
 
 - Backend (this)
-- [Frontent](https://github.com/falentio/meowvie-frontend)
+- [Frontend](https://github.com/falentio/meowvie-frontend)
 - [Crawler](https://github.com/falentio/meowvie-collector)
 
 ## Tech Stacks
@@ -47,3 +47,6 @@ Summary:
 
 - Otakudesu
 - Melongmovie (Partially)
+- Kusonime
+- Samehadaku
+- Kazefuri
