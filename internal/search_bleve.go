@@ -32,9 +32,6 @@ func (search *searchBleve) Query(term string) ([]string, error) {
 		if i > 9 {
 			break
 		}
-		if res.Hits[i].Score < 0.2 {
-			break
-		}
 		id := res.Hits[i].ID
 		result = append(result, id)
 	}
