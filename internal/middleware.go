@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/xid"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -21,7 +22,13 @@ func Logger(ctx *fiber.Ctx) error {
 	start := time.Now()
 
 	chainErr := ctx.Next()
-	if log.Info().Enabled() {
+	var e *zerolog.Event
+	if chainErr != nil {
+		e = log.Error()
+	} else {
+		e = log.Info()
+	}
+	if e.Enabled() {
 		end := time.Now()
 		url := ctx.OriginalURL()
 		ip := ctx.IP()
@@ -29,7 +36,7 @@ func Logger(ctx *fiber.Ctx) error {
 		hostname := ctx.Hostname()
 		origin := ctx.Get(fiber.HeaderOrigin)
 		status := ctx.Context().Response.StatusCode()
-		log.Info().
+		e.
 			Str("requestId", idStr).
 			Float64("responseTimeMilli", float64(end.Sub(start).Microseconds())/1000).
 			Int("status", status).
