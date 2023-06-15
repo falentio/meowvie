@@ -57,14 +57,15 @@ func (repo *movieRepoGorm) Find(id xid.ID) (*Movie, error) {
 
 func (repo *movieRepoGorm) FindAll(ids []xid.ID) ([]*Movie, error) {
 	ms := make([]*Movie, len(ids))
+	var err error
 	for i, id := range ids {
 		ms[i] = &Movie{}
 		ms[i].ID = id
-		if err := repo.DB.Preload("DownloadUrl").Take(ms[i]).Error; err != nil {
-			return nil, err
+		if err2 := repo.DB.Preload("DownloadUrl").Take(ms[i]).Error; err2 != nil {
+			err = err2
 		}
 	}
-	return ms, nil
+	return ms, err
 }
 
 func (repo *movieRepoGorm) Delete(id xid.ID) error {
